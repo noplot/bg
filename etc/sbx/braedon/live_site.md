@@ -9,10 +9,6 @@ we want to create a live site - frontend and backend hosted.
     - hmm; not sure which one to use here
 - **CentOS**
 
-## Unknowns
-- what is the best sql service to use?
-- is centos still the best option here?
-
 ## Execution
 - [ ] put nextjs in a docker container (if possible)
 - [ ] deploy docker nextjs to digital ocean
