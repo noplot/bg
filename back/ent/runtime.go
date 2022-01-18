@@ -4,6 +4,7 @@ package ent
 
 import (
 	"back/ent/biouser"
+	"back/ent/enttiktokuser"
 	"back/ent/schema"
 )
 
@@ -17,4 +18,10 @@ func init() {
 	biouserDescName := biouserFields[0].Descriptor()
 	// biouser.DefaultName holds the default value on creation for the name field.
 	biouser.DefaultName = biouserDescName.Default.(string)
+	enttiktokuserFields := schema.EntTikTokUser{}.Fields()
+	_ = enttiktokuserFields
+	// enttiktokuserDescName is the schema descriptor for name field.
+	enttiktokuserDescName := enttiktokuserFields[0].Descriptor()
+	// enttiktokuser.DefaultName holds the default value on creation for the name field.
+	enttiktokuser.DefaultName = enttiktokuserDescName.Default.(string)
 }

@@ -10,6 +10,7 @@ import (
 	"back/ent/migrate"
 
 	"back/ent/biouser"
+	"back/ent/enttiktokuser"
 
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
@@ -22,6 +23,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// BioUser is the client for interacting with the BioUser builders.
 	BioUser *BioUserClient
+	// EntTikTokUser is the client for interacting with the EntTikTokUser builders.
+	EntTikTokUser *EntTikTokUserClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -36,6 +39,7 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.BioUser = NewBioUserClient(c.config)
+	c.EntTikTokUser = NewEntTikTokUserClient(c.config)
 }
 
 // Open opens a database/sql.DB specified by the driver name and
@@ -67,9 +71,10 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:     ctx,
-		config:  cfg,
-		BioUser: NewBioUserClient(cfg),
+		ctx:           ctx,
+		config:        cfg,
+		BioUser:       NewBioUserClient(cfg),
+		EntTikTokUser: NewEntTikTokUserClient(cfg),
 	}, nil
 }
 
@@ -87,8 +92,9 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		config:  cfg,
-		BioUser: NewBioUserClient(cfg),
+		config:        cfg,
+		BioUser:       NewBioUserClient(cfg),
+		EntTikTokUser: NewEntTikTokUserClient(cfg),
 	}, nil
 }
 
@@ -119,6 +125,7 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	c.BioUser.Use(hooks...)
+	c.EntTikTokUser.Use(hooks...)
 }
 
 // BioUserClient is a client for the BioUser schema.
@@ -209,4 +216,94 @@ func (c *BioUserClient) GetX(ctx context.Context, id int) *BioUser {
 // Hooks returns the client hooks.
 func (c *BioUserClient) Hooks() []Hook {
 	return c.hooks.BioUser
+}
+
+// EntTikTokUserClient is a client for the EntTikTokUser schema.
+type EntTikTokUserClient struct {
+	config
+}
+
+// NewEntTikTokUserClient returns a client for the EntTikTokUser from the given config.
+func NewEntTikTokUserClient(c config) *EntTikTokUserClient {
+	return &EntTikTokUserClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `enttiktokuser.Hooks(f(g(h())))`.
+func (c *EntTikTokUserClient) Use(hooks ...Hook) {
+	c.hooks.EntTikTokUser = append(c.hooks.EntTikTokUser, hooks...)
+}
+
+// Create returns a create builder for EntTikTokUser.
+func (c *EntTikTokUserClient) Create() *EntTikTokUserCreate {
+	mutation := newEntTikTokUserMutation(c.config, OpCreate)
+	return &EntTikTokUserCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of EntTikTokUser entities.
+func (c *EntTikTokUserClient) CreateBulk(builders ...*EntTikTokUserCreate) *EntTikTokUserCreateBulk {
+	return &EntTikTokUserCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for EntTikTokUser.
+func (c *EntTikTokUserClient) Update() *EntTikTokUserUpdate {
+	mutation := newEntTikTokUserMutation(c.config, OpUpdate)
+	return &EntTikTokUserUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *EntTikTokUserClient) UpdateOne(ettu *EntTikTokUser) *EntTikTokUserUpdateOne {
+	mutation := newEntTikTokUserMutation(c.config, OpUpdateOne, withEntTikTokUser(ettu))
+	return &EntTikTokUserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *EntTikTokUserClient) UpdateOneID(id int) *EntTikTokUserUpdateOne {
+	mutation := newEntTikTokUserMutation(c.config, OpUpdateOne, withEntTikTokUserID(id))
+	return &EntTikTokUserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for EntTikTokUser.
+func (c *EntTikTokUserClient) Delete() *EntTikTokUserDelete {
+	mutation := newEntTikTokUserMutation(c.config, OpDelete)
+	return &EntTikTokUserDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *EntTikTokUserClient) DeleteOne(ettu *EntTikTokUser) *EntTikTokUserDeleteOne {
+	return c.DeleteOneID(ettu.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *EntTikTokUserClient) DeleteOneID(id int) *EntTikTokUserDeleteOne {
+	builder := c.Delete().Where(enttiktokuser.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &EntTikTokUserDeleteOne{builder}
+}
+
+// Query returns a query builder for EntTikTokUser.
+func (c *EntTikTokUserClient) Query() *EntTikTokUserQuery {
+	return &EntTikTokUserQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a EntTikTokUser entity by its id.
+func (c *EntTikTokUserClient) Get(ctx context.Context, id int) (*EntTikTokUser, error) {
+	return c.Query().Where(enttiktokuser.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *EntTikTokUserClient) GetX(ctx context.Context, id int) *EntTikTokUser {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *EntTikTokUserClient) Hooks() []Hook {
+	return c.hooks.EntTikTokUser
 }

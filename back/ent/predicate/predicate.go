@@ -8,3 +8,6 @@ import (
 
 // BioUser is the predicate function for biouser builders.
 type BioUser func(*sql.Selector)
+
+// EntTikTokUser is the predicate function for enttiktokuser builders.
+type EntTikTokUser func(*sql.Selector)

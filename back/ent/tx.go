@@ -14,6 +14,8 @@ type Tx struct {
 	config
 	// BioUser is the client for interacting with the BioUser builders.
 	BioUser *BioUserClient
+	// EntTikTokUser is the client for interacting with the EntTikTokUser builders.
+	EntTikTokUser *EntTikTokUserClient
 
 	// lazily loaded.
 	client     *Client
@@ -150,6 +152,7 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.BioUser = NewBioUserClient(tx.config)
+	tx.EntTikTokUser = NewEntTikTokUserClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

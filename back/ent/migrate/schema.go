@@ -19,9 +19,21 @@ var (
 		Columns:    BioUsersColumns,
 		PrimaryKey: []*schema.Column{BioUsersColumns[0]},
 	}
+	// EntTikTokUsersColumns holds the columns for the "ent_tik_tok_users" table.
+	EntTikTokUsersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "name", Type: field.TypeString, Default: ""},
+	}
+	// EntTikTokUsersTable holds the schema information for the "ent_tik_tok_users" table.
+	EntTikTokUsersTable = &schema.Table{
+		Name:       "ent_tik_tok_users",
+		Columns:    EntTikTokUsersColumns,
+		PrimaryKey: []*schema.Column{EntTikTokUsersColumns[0]},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		BioUsersTable,
+		EntTikTokUsersTable,
 	}
 )
 
